@@ -16,32 +16,36 @@ const App = () => {
     setIsOpen(true);
 
     const options = {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "text-davinci-003",
+        model: 'text-davinci-003',
         prompt:
-          "Extract keywords from this text. Make the first letter of each word uppercase and separate with comma\n\n" +
+          'Extract keywords from this text. Make the first letter of every word uppercase and separate with commas:\n\n' +
           text +
-          "",
+          '',
         temperature: 0.5,
         max_tokens: 60,
+        top_p: 1.0,
         frequency_penalty: 0.8,
+        presence_penalty: 0.0,
       }),
-
     };
-    const response = await fetch(import.meta.env.VITE_OPENAI_API_URL, options)
-
-    const json = await response.json();
-
-    const data = json.choices[0].text.trim()
-    console.log(data);
-    setKeywords(data)
-    setIsLoading(false)
-    
+    try {
+      const response = await fetch(
+        import.meta.env.VITE_OPENAI_API_URL,
+        options
+      );
+      const json = await response.json();
+      console.log(json.choices[0].text.trim());
+      setKeywords(json.choices[0].text.trim());
+      setIsLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const closeModal = () => {
